@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# BareCloudz Deployment Script for Namecheap Hosting
+# This script helps deploy the application on Namecheap or similar shared hosting
+
+# Ensure node_modules binaries are available
+export PATH="$PATH:./node_modules/.bin"
+
+echo "=== BareCloudz Deployment Script ==="
+echo "Starting deployment process..."
+
+# Install dependencies if needed
+if [ "$1" == "--install" ] || [ "$1" == "--all" ]; then
+  echo "Installing dependencies..."
+  npm install
+  # Double check critical packages are installed
+  echo "Verifying critical packages..."
+  if [ ! -d "node_modules/openai" ]; then
+    echo "OpenAI package not found. Installing specifically..."
+    npm install openai
+  fi
+  echo "Dependencies installed!"
+fi
+
+# Run the build process
+echo "Starting build process..."
+npx vite build
+npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+echo "Build completed!"
+
+# Copy production package.json for deployment
+echo "Setting up production environment..."
+cp package.production.json dist/package.json
+
+# Install dependencies in the dist folder
+echo "Installing production dependencies in dist folder..."
+cd dist
+# Install all critical dependencies to prevent further issues
+npm install express openai @neondatabase/serverless drizzle-orm drizzle-zod zod ws bcryptjs uuid express-session passport passport-local openid-client nodemailer multer connect-pg-simple express-rate-limit memoizee memorystore jspdf @sendgrid/mail
+# Install React and frontend dependencies for server-side rendering
+npm install react react-dom wouter @tanstack/react-query
+# Install more utility packages
+npm install date-fns clsx zod-validation-error
+cd ..
+
+# Create a startup script to properly handle ESM modules
+echo "Creating startup script..."
+cat > dist/start.js << EOF
+// Startup script for Namecheap hosting
+// This adds better error handling for module imports
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+// Try to load the app
+try {
+  // Import and run the application
+  import('./index.js').catch(err => {
+    console.error('Failed to start application:', err);
+    
+    // More detailed error reporting for module errors
+    if (err.code === 'ERR_MODULE_NOT_FOUND') {
+      console.error('Module not found error. This is likely a dependency issue.');
+      console.error('Missing module: ' + err.message.split("'")[1]);
+      console.error('Try running "npm install" in the dist directory.');
+    }
+    
+    process.exit(1);
+  });
+} catch (error) {
+  console.error('Startup error:', error);
+  process.exit(1);
+}
+EOF
+echo "Startup script created."
+
+# Database migration (if needed)
+if [ "$1" == "--with-db" ] || [ "$2" == "--with-db" ]; then
+  echo "Checking database schema..."
+  npx drizzle-kit push
+  echo "Database schema updated!"
+fi
+
+echo "=== Deployment completed successfully! ==="
+echo "Your application is ready to be served from the 'dist' directory."
+echo ""
+echo "To start the application, run: NODE_ENV=production node dist/index.js"
+echo ""
+echo "For additional deployment options:"
+echo "  --install    : Install dependencies before building"
+echo "  --with-db    : Update database schema after building"

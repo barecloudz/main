@@ -1,0 +1,31 @@
+returncode: 1
+stdout:
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+stderr:
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/npm: line 14: DATABASE_URL: command not found
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/npm: line 14: OPENAI_API_KEY: command not found
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/npm: line 14: SESSION_SECRET: command not found
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/npm: line 14: export: `=postgres://appletmelogin:BB6aEukNvB@db.namecheap.com:5432/bareqduh_': not a valid identifier
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/npm: line 14: export: `=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': not a valid identifier
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/npm: line 14: export: `=': not a valid identifier
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/node: line 10: DATABASE_URL: command not found
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/node: line 10: OPENAI_API_KEY: command not found
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/node: line 10: SESSION_SECRET: command not found
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/node: line 10: export: `=postgres://appletmelogin:BB6aEukNvB@db.namecheap.com:5432/bareqduh_': not a valid identifier
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/node: line 10: export: `=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': not a valid identifier
+/home/bareqduh/nodevenv/public_html/bcapp/18/bin/node: line 10: export: `=': not a valid identifier
+node:internal/modules/cjs/loader:1143
+  throw err;
+  ^
+
+Error: Cannot find module '/home/bareqduh/public_html/bcapp/dist/index.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1140:15)
+    at Module._load (node:internal/modules/cjs/loader:981:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.20.7
